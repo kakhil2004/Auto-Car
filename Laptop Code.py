@@ -32,6 +32,8 @@ health_scr = logo.render(str(" MECHATRONICS CHNL"), True, (0, 0, 0))
 statsTXT = reg.render(str("STATS"), True, (255, 255, 255))
 controlsTXT = reg.render(str("CONTROLS"), True, (255, 255, 255))
 boostTXT = reg1.render(str("BOOST -"), True, (255, 255, 255))
+cpuTXT = reg1.render(str("CPU     -"), True, (255, 255, 255))
+batteryTXT = reg1.render(str("BTRY  -"), True, (255, 255, 255))
 #starting variables
 running = True
 enable = False
@@ -50,8 +52,10 @@ def graphics(enable,drive):
     pygame.draw.line(screen, (0, 0, 0), (505, 58), (550, 0), 10)  # sideways line
     screen.blit(health_scr, (0, 0))
     screen.blit(statsTXT, (265, 65))
-    screen.blit(boostTXT, (265, 150+6))
+    screen.blit(boostTXT, (265, 156))
     screen.blit(controlsTXT, (10, 65))
+    screen.blit(cpuTXT, (265, 186))
+    screen.blit(batteryTXT, (265, 216))
     if enable:
         screen.blit(enabled, (enx, eny))
     else:
@@ -66,10 +70,20 @@ def graphics(enable,drive):
     screen.blit(fwd_arr, (650+67, (height / 2) - (108 + 83)))
     screen.blit(bwd_arr, (650 + 67, (height / 2) + 120))
 def dis_cpu():
-    pass
+    raw = psutil.cpu_percent()
+    battery = psutil.sensors_battery()
+    bar1 = (raw*1.25)
+    if battery == "None":
+        bar2 = (battery*1.25)
+        pygame.draw.rect(screen, (0, 0, 0), [370, 220, 125, 15])
+        pygame.draw.rect(screen, (255, 165, 0), [370, 220, bar2, 15])
+    else:
+        pygame.draw.rect(screen, (0, 0, 0), [370, 220, 125, 15])
+    pygame.draw.rect(screen, (0, 0, 0), [370, 190, 125, 15])
+    pygame.draw.rect(screen, (255, 165, 0), [370, 190, bar1, 15])
 
 while running:
-    clock.tick(20)
+    clock.tick(15)
     screen.blit(background,(0,0))
 
     for event in pygame.event.get():
@@ -112,7 +126,7 @@ while running:
         if (timer >= 4.9):
             boost_cooldown = False
             print("done")
-    print("poop")
+
 
     dis_cpu()
     screen.blit(car, (650, (height/2)-108))
